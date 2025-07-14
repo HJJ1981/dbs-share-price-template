@@ -12,9 +12,9 @@ def main():
     # db
     return (render_template("main.html"))
 
-@app.route("/main", methods=["GET", "POST"])
+@app.route("/dbs", methods=["GET", "POST"])
 def dbs():
-    return (render_template("dbs.html"))
+    return render_template("dbs.html")
 
 @app.route("/prediction", methods=["POST"])
 def prediction():
