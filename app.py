@@ -7,7 +7,6 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 GROQ_API_KEY = os.getenv("API_KEY")
-# for cloud............
 
 app = Flask(__name__)
 
@@ -18,7 +17,7 @@ def index():
 @app.route("/main", methods=["GET", "POST"])
 def main():
     q = request.form.get("q")
-    # db
+    # You can use `q` for database logic here
     return render_template("main.html")
 
 @app.route("/llama", methods=["GET", "POST"])
@@ -28,18 +27,32 @@ def llama():
 @app.route("/llama_reply", methods=["GET", "POST"])
 def llama_reply():
     q = request.form.get("q")
-    # load model
-    client = Groq()
+
+    client = Groq(api_key=GROQ_API_KEY)
     completion = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
-            {
-                "role": "user",
-                "content": q
-            }
+            {"role": "user", "content": q}
         ]
     )
-    return(render_template("llama_reply.html",r=completion.choices[0].message.content))
+    return render_template("llama_reply.html", r=completion.choices[0].message.content)
+
+@app.route("/deepseek", methods=["GET", "POST"])
+def deepseek():
+    return render_template("deepseek.html")
+
+@app.route("/deepseek_reply", methods=["GET", "POST"])
+def deepseek_reply():
+    q = request.form.get("q")
+
+    client = Groq(api_key=GROQ_API_KEY)
+    completion_ds = client.chat.completions.create(
+        model="deepseek-r1-distill-llama-70b",
+        messages=[
+            {"role": "user", "content": q}
+        ]
+    )
+    return render_template("deepseek_reply.html", r=completion_ds.choices[0].message.content)
 
 @app.route("/dbs", methods=["GET", "POST"])
 def dbs():
@@ -53,3 +66,4 @@ def prediction():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
