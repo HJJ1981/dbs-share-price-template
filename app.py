@@ -64,6 +64,26 @@ def prediction():
     result = round(-50.6 * q + 90.2, 2)
     return render_template("prediction.html", r=result)
 
+@app.route("/telgram", methods=["GET", "POST"])
+def telegram():
+    domain_url = 'https://dbs-share-price-template-9kj1.onrender.com'
+
+    # The following line is used to delete the existing webhook URL for the Telegram bot
+    delete_webhook_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/deleteWebhook"
+    requests.post(delete_webhook_url, json={"url": domain_url, "drop_pending_updates": True})
+
+    # The following line is used to set the webhook URL for the Telegram bot
+    set_webhook_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook?url={domain_url}/webhook"
+    webhook_response = requests.post(set_webhook_url, json={"url": domain_url, "drop_pending_updates": True})
+
+    if webhook_response.status_code == 200:
+        # set status message
+        status = "The telegram bot is running. Please check with the telegram bot. @dsai_JJ_bot"
+    else:
+        status = "Failed to start the telegram bot. Please check the logs."
+ 
+    return (render_template("telgram.html", status=status))
+
 if __name__ == "__main__":
     app.run(debug=True)
 
