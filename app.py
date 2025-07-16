@@ -65,7 +65,7 @@ def prediction():
     result = round(-50.6 * q + 90.2, 2)
     return render_template("prediction.html", r=result)
 
-@app.route("/telgram", methods=["GET", "POST"])
+@app.route("/telegram", methods=["GET", "POST"])
 def telegram():
     domain_url = 'https://dbs-share-price-template-9kj1.onrender.com'
 
@@ -83,7 +83,7 @@ def telegram():
     else:
         status = "Failed to start the telegram bot. Please check the logs."
  
-    return (render_template("telgram.html", status=status))
+    return (render_template("telegram.html", status=status))
 
 @app.route("/webhook",methods=["GET","POST"])
 def webhook():
