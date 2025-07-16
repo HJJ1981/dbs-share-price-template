@@ -8,6 +8,7 @@ import requests
 # Load environment variables from .env file
 load_dotenv()
 GROQ_API_KEY = os.getenv("API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 app = Flask(__name__)
 
@@ -67,8 +68,6 @@ def prediction():
 
 @app.route("/telegram", methods=["GET", "POST"])
 def telegram():
-
-    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
     domain_url = 'https://dbs-share-price-template-9kj1.onrender.com'
 
