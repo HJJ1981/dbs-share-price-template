@@ -67,6 +67,9 @@ def prediction():
 
 @app.route("/telegram", methods=["GET", "POST"])
 def telegram():
+
+    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
     domain_url = 'https://dbs-share-price-template-9kj1.onrender.com'
 
     # The following line is used to delete the existing webhook URL for the Telegram bot
