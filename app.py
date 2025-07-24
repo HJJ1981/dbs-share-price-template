@@ -1,9 +1,11 @@
 import os
-from flask import Flask, render_template, request
+import requests
 import joblib
+import sqlite3
+from flask import Flask, render_template, request
 from groq import Groq
 from dotenv import load_dotenv
-import requests
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -90,6 +92,7 @@ def telegram():
 @app.route("/stop_telegram", methods=["GET", "POST"])
 def stop_telegram():
 
+    """Stop the Telegram bot by deleting the webhook."""
     domain_url = 'https://dbs-share-price-template-9kj1.onrender.com'
 
     # The following line is used to delete the existing webhook URL for the Telegram bot
@@ -107,7 +110,7 @@ def stop_telegram():
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
 
-    # This endpoint will be called by Telegram when a new message is received
+    """This endpoint will be called by Telegram when a new message is received"""
     update = request.get_json()
     if "message" in update and "text" in update["message"]:
         # Extract the chat ID and message text from the update
@@ -135,6 +138,40 @@ def webhook():
         })
     return('ok', 200)
 
+@app.route("/user_log", methods=["GET", "POST"])
+def user_log():
+    """Display user logs from the database."""
+    users = []
+    try:
+        conn = sqlite3.connect("user.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user")
+        users = cursor.fetchall()
+        conn.close()
+    except sqlite3.Error:
+        users = []
+    return render_template("user_log.html", users=users)
+
+@app.route("/delete_log", methods=["GET", "POST"])
+def delete_log():
+    """Delete all user logs from the database."""
+    try:
+        conn = sqlite3.connect("user.db")
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM user")
+        conn.commit()
+        conn.close()
+        status = "All user logs have been deleted."
+    except sqlite3.Error as e:
+        status = f"Error deleting logs: {e}"
+    return render_template("delete_log.html", status=status)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
+
+# Set webhook for Telegram bot
+# https://api.telegram.org/bot{groq_telegram_token}/setWebhook?url ={domain_url}/webhook
+
+# Delete webhook for Telegram bot
+# https: //api.telegram.org/bot%7Bgroq_telegram_token%7D/deleteWebhook
 

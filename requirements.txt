@@ -1,7 +1,8 @@
-gunicorn
 flask
-scikit-learn
-joblib
+gunicorn
 groq
+joblib
+scikit-learn
 python-dotenv
 requests
+openai
