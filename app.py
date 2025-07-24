@@ -20,8 +20,17 @@ def index():
 
 @app.route("/main", methods=["GET", "POST"])
 def main():
-    q = request.form.get("q")
-    # You can use `q` for database logic here
+    name = request.form.get("q")
+    if name:
+        try:
+            conn = sqlite3.connect("user.db")
+            cursor = conn.cursor()
+            # Insert the name with the current timestamp
+            cursor.execute("INSERT INTO user (name, timestamp) VALUES (?, datetime('now'))", (name,))
+            conn.commit()
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
     return render_template("main.html")
 
 @app.route("/llama", methods=["GET", "POST"])
@@ -138,6 +147,10 @@ def webhook():
         })
     return('ok', 200)
 
+@app.route('/sepia', methods=['GET', 'POST'])
+def sepia():
+    return render_template("sepia_hf.html")
+
 @app.route("/user_log", methods=["GET", "POST"])
 def user_log():
     """Display user logs from the database."""
@@ -145,6 +158,7 @@ def user_log():
     try:
         conn = sqlite3.connect("user.db")
         cursor = conn.cursor()
+        # Ensure the user table exists
         cursor.execute("SELECT * FROM user")
         users = cursor.fetchall()
         conn.close()
